@@ -15,10 +15,10 @@ namespace MoneyTransactionsTests.Actors
         public void Should_create_actor()
         {
             var accountId = Guid.NewGuid();
-            var userId = Guid.NewGuid();
+            var clientId = Guid.NewGuid();
             decimal balance = 100m;
-            var user = new User(userId, "Jonh", "Doe");
-            var account = new Account(accountId, balance, user);
+            var client = new Client(clientId, "Jonh", "Doe");
+            var account = new Account(accountId, balance, client);
 
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
         }

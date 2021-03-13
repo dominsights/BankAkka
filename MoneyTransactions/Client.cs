@@ -5,9 +5,9 @@ using System.Text;
 
 namespace MoneyTransactions
 {
-    public class User : Entity
+    public class Client : Entity
     {
-        public User(Guid userId, string firstName, string lastName) : base(userId)
+        public Client(Guid userId, string firstName, string lastName) : base(userId)
         {
             FirstName = firstName;
             LastName = lastName;

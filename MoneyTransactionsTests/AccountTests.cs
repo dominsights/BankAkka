@@ -14,12 +14,12 @@ namespace MoneyTransactionsTests
             var accountId = Guid.NewGuid();
             var userId = Guid.NewGuid();
             decimal balance = 100m;
-            var user = new User(userId, "Jonh", "Doe");
+            var user = new Client(userId, "Jonh", "Doe");
             var account = new Account(accountId, balance, user);
 
             Assert.Equal(accountId, account.Id);
             Assert.Equal(balance, account.Balance);
-            Assert.Equal(user, account.User);
+            Assert.Equal(user, account.Client);
         }
     }
 }

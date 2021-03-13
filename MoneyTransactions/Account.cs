@@ -7,18 +7,18 @@ namespace MoneyTransactions
 {
     public class Account : Entity
     {
-        public Account(Guid accountId, decimal balance, User user) : base(accountId)
+        public Account(Guid accountId, decimal balance, Client client) : base(accountId)
         {
             Balance = balance;
-            User = user;
+            Client = client;
         }
 
         public decimal Balance { get; }
-        public User User { get; }
+        public Client Client { get; }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Balance, User);
+            return HashCode.Combine(Id, Balance, Client);
         }
     }
 }
