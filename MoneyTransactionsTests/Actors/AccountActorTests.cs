@@ -2,6 +2,7 @@
 using Akka.TestKit.Xunit2;
 using MoneyTransactions;
 using MoneyTransactions.Actors;
+using MoneyTransactions.Actors.Messages;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,6 +22,13 @@ namespace MoneyTransactionsTests.Actors
             var account = new Account(accountId, balance, client);
 
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
+
+            decimal amount = 50m;
+            var destinationAccount = new Account(Guid.NewGuid(), 100m, new Client(Guid.NewGuid(), "Jane", "Doe"));
+            var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
+            subject.Tell(new TransferMoney(amount, destinationActor));
+
+            ExpectMsg<TransferSucceeded>();
         }
     }
 }
