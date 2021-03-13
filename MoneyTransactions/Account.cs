@@ -14,6 +14,12 @@ namespace MoneyTransactions
         }
 
         public decimal Balance { get; }
+
+        internal void Withdraw(decimal amount)
+        {
+            throw new NotImplementedException();
+        }
+
         public Client Client { get; }
 
         public override int GetHashCode()
