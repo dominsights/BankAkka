@@ -13,7 +13,7 @@ namespace MoneyTransactionsTests.Actors
     public class AccountActorTests : TestKit
     {
         [Fact]
-        public void Should_create_actor()
+        public void Should_transfer_correct_amount_when_balance_is_enough()
         {
             var accountId = Guid.NewGuid();
             var clientId = Guid.NewGuid();
@@ -23,13 +23,17 @@ namespace MoneyTransactionsTests.Actors
 
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
 
-            decimal amount = 50m;
-            var destinationAccount = new Account(Guid.NewGuid(), 100m, new Client(Guid.NewGuid(), "Jane", "Doe"));
+            decimal amountToTransfer = 50m;
+            var destinationAccount = new Account(Guid.NewGuid(), balance, new Client(Guid.NewGuid(), "Jane", "Doe"));
             var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
-            subject.Tell(new TransferMoney(amount, destinationActor));
+            subject.Tell(new TransferMoney(amountToTransfer, destinationActor));
 
             var transferSucceeded = ExpectMsg<TransferSucceeded>();
-            Assert.Equal(balance - amount, transferSucceeded.NewBalance);
+            Assert.Equal(balance - amountToTransfer, transferSucceeded.NewBalance);
+
+            destinationActor.Tell(new CheckBalance());
+            var currentBalance = ExpectMsg<BalanceStatus>();
+            Assert.Equal(balance + amountToTransfer, currentBalance.Balance);
         }
     }
 }
