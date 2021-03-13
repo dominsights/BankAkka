@@ -21,5 +21,34 @@ namespace MoneyTransactionsTests
             Assert.Equal(balance, account.Balance);
             Assert.Equal(user, account.Client);
         }
+
+        [Fact]
+        public void Should_withdraw_correct_amount_when_balance_is_enough()
+        {
+            var accountId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            decimal balance = 100m;
+            var user = new Client(userId, "Jonh", "Doe");
+            var account = new Account(accountId, balance, user);
+
+            decimal amount = 50m;
+            account.Withdraw(amount);
+
+            Assert.Equal(balance - amount, account.Balance);
+        }
+
+        [Fact]
+        public void Should_not_withdraw_amount_when_balance_is_not_enough()
+        {
+            var accountId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            decimal balance = 10m;
+            var user = new Client(userId, "Jonh", "Doe");
+            var account = new Account(accountId, balance, user);
+
+            decimal amount = 50m;
+            Assert.Throws<InvalidOperationException>(() => account.Withdraw(amount));
+            Assert.Equal(balance, account.Balance);
+        }
     }
 }

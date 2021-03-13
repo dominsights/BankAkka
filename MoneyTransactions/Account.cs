@@ -13,11 +13,17 @@ namespace MoneyTransactions
             Client = client;
         }
 
-        public decimal Balance { get; }
+        public decimal Balance { get; private set; }
 
-        internal void Withdraw(decimal amount)
+        public void Withdraw(decimal amount)
         {
-            throw new NotImplementedException();
+            if(Balance >= amount)
+            {
+                Balance -= amount;
+            } else
+            {
+                throw new InvalidOperationException("Not enough money to withdraw.");
+            }
         }
 
         public Client Client { get; }
