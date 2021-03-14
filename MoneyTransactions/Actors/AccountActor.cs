@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MoneyTransactions.Actors
 {
-    public class AccountActor : ReceiveActor
+    public class AccountActor : ReceiveActor, IWithUnboundedStash
     {
         private IActorRef _sender;
 
@@ -34,9 +34,16 @@ namespace MoneyTransactions.Actors
         {
             ReceiveCommonMessages();
 
+            Receive<TransferMoney>(msg =>
+            {
+                Stash.Stash();
+            });
+
             Receive<DepositConfirmed>(msg =>
             {
                 _sender.Tell(new TransferSucceeded(Account.Balance));
+                Become(Ready);
+                Stash.UnstashAll();
             });
         }
 
@@ -55,5 +62,6 @@ namespace MoneyTransactions.Actors
         }
 
         public Account Account { get; }
+        public IStash Stash { get; set; }
     }
 }
