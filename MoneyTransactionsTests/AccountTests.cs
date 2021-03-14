@@ -50,5 +50,46 @@ namespace MoneyTransactionsTests
             Assert.Throws<InvalidOperationException>(() => account.Withdraw(amount));
             Assert.Equal(balance, account.Balance);
         }
+
+        [Fact]
+        public void Should_deposit_correct_amount_when_positive_value()
+        {
+            var accountId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            decimal balance = 100m;
+            var user = new Client(userId, "Jonh", "Doe");
+            var account = new Account(accountId, balance, user);
+
+            decimal amount = 50m;
+            account.Deposit(amount);
+
+            Assert.Equal(balance + amount, account.Balance);
+        }
+
+        [Fact]
+        public void Should_not_deposit_when_negative_value()
+        {
+            var accountId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            decimal balance = 100m;
+            var user = new Client(userId, "Jonh", "Doe");
+            var account = new Account(accountId, balance, user);
+
+            decimal amount = -50m;
+            Assert.Throws<InvalidOperationException>(() => account.Deposit(amount));
+        }
+
+        [Fact]
+        public void Should_not_deposit_when_zero()
+        {
+            var accountId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            decimal balance = 100m;
+            var user = new Client(userId, "Jonh", "Doe");
+            var account = new Account(accountId, balance, user);
+
+            decimal amount = 0m;
+            Assert.Throws<InvalidOperationException>(() => account.Deposit(amount));
+        }
     }
 }

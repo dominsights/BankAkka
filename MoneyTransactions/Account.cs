@@ -32,5 +32,16 @@ namespace MoneyTransactions
         {
             return HashCode.Combine(Id, Balance, Client);
         }
+
+        public void Deposit(decimal amount)
+        {
+            if(amount > 0)
+            {
+                Balance += amount;
+            } else
+            {
+                throw new InvalidOperationException($"{nameof(amount)} can't be 0 or negative.");
+            }
+        }
     }
 }

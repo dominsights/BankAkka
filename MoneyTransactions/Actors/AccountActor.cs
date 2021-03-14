@@ -8,19 +8,49 @@ namespace MoneyTransactions.Actors
 {
     public class AccountActor : ReceiveActor
     {
+        private IActorRef _sender;
+
         public AccountActor(Account account)
         {
             Account = account;
 
+            Become(Ready);
+        }
+
+        private void Ready()
+        {
             Receive<TransferMoney>(msg =>
             {
-                account.Withdraw(msg.Amount);
-                msg.DestinationActor.Tell(new Deposit(msg.Amount, account.Id, account.Client.FullName));
+                Account.Withdraw(msg.Amount);
+                msg.DestinationActor.Tell(new Deposit(msg.Amount, Account.Id, Account.Client.FullName));
+                _sender = Sender;
+                Become(WaitingForConfirmation);
             });
 
+            ReceiveCommonMessages();
+        }
+
+        private void WaitingForConfirmation()
+        {
+            ReceiveCommonMessages();
+
+            Receive<DepositConfirmed>(msg =>
+            {
+                _sender.Tell(new TransferSucceeded(Account.Balance));
+            });
+        }
+
+        private void ReceiveCommonMessages()
+        {
             Receive<CheckBalance>(msg =>
             {
-                Sender.Tell(new BalanceStatus(account.Balance));
+                Sender.Tell(new BalanceStatus(Account.Balance));
+            });
+
+            Receive<Deposit>(msg =>
+            {
+                Account.Deposit(msg.Amount);
+                Sender.Tell(new DepositConfirmed());
             });
         }
 

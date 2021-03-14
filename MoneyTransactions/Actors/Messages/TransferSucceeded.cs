@@ -6,6 +6,11 @@ namespace MoneyTransactions.Actors.Messages
 {
     public class TransferSucceeded
     {
-        public decimal NewBalance { get; set; }
+        public decimal NewBalance { get; }
+
+        public TransferSucceeded(decimal newBalance)
+        {
+            NewBalance = newBalance;
+        }
     }
 }

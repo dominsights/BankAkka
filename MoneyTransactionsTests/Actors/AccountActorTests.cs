@@ -46,10 +46,12 @@ namespace MoneyTransactionsTests.Actors
             var account = new Account(accountId, balance, client);
 
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
+            
             decimal amount = 50m;
             subject.Tell(new Deposit(amount, Guid.NewGuid(), "Jane Doe"));
+            ExpectMsg<DepositConfirmed>();
+            
             subject.Tell(new CheckBalance());
-
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance + amount, msg.Balance ));
         }
     }
