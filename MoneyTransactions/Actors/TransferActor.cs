@@ -23,12 +23,12 @@ namespace MoneyTransactions.Actors
                 _sender = Sender;
                 _transferMoney = msg;
 
-                Become(WaitingForConfirmation);
+                Become(ExecutingTransfer);
                 msg.Source.Tell(new Withdraw(msg.Amount));
             });
         }
 
-        private void WaitingForConfirmation()
+        private void ExecutingTransfer()
         {
             Receive<WithdrawResult>(msg => msg.Result == Result.Success, msg =>
             {
