@@ -2,7 +2,6 @@
 using Akka.TestKit.Xunit2;
 using MoneyTransactions;
 using MoneyTransactions.Actors;
-using MoneyTransactions.Actors.Messages;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,11 +23,11 @@ namespace MoneyTransactionsTests.Actors
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
             
             decimal amount = 50m;
-            subject.Tell(new Deposit(amount));
-            ExpectMsg<DepositConfirmed>();
+            subject.Tell(new AccountActor.Deposit(amount));
+            ExpectMsg<AccountActor.DepositConfirmed>();
             
-            subject.Tell(new CheckBalance());
-            ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance + amount, msg.Balance ));
+            subject.Tell(new AccountActor.CheckBalance());
+            ExpectMsg<AccountActor.BalanceStatus>(msg => Assert.Equal(balance + amount, msg.Balance ));
         }
 
         [Fact]
@@ -43,11 +42,11 @@ namespace MoneyTransactionsTests.Actors
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
 
             decimal amount = 50m;
-            subject.Tell(new Withdraw(amount));
-            ExpectMsg<WithdrawCompleted>();
+            subject.Tell(new AccountActor.Withdraw(amount));
+            ExpectMsg<AccountActor.WithdrawCompleted>();
 
-            subject.Tell(new CheckBalance());
-            ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance - amount, msg.Balance));
+            subject.Tell(new AccountActor.CheckBalance());
+            ExpectMsg<AccountActor.BalanceStatus>(msg => Assert.Equal(balance - amount, msg.Balance));
         }
 
         [Fact]
@@ -62,22 +61,22 @@ namespace MoneyTransactionsTests.Actors
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
 
             decimal withdraw = 50m;
-            subject.Tell(new Withdraw(withdraw));
-            ExpectMsg<WithdrawCompleted>();
+            subject.Tell(new AccountActor.Withdraw(withdraw));
+            ExpectMsg<AccountActor.WithdrawCompleted>();
 
-            subject.Tell(new CheckBalance());
-            ExpectMsg<BalanceStatus>(msg =>
+            subject.Tell(new AccountActor.CheckBalance());
+            ExpectMsg<AccountActor.BalanceStatus>(msg =>
             {
                 decimal expected = balance - withdraw;
                 Assert.Equal(expected, msg.Balance);
             });
 
             decimal deposit = 50m;
-            subject.Tell(new Deposit(deposit));
-            ExpectMsg<DepositConfirmed>();
+            subject.Tell(new AccountActor.Deposit(deposit));
+            ExpectMsg<AccountActor.DepositConfirmed>();
 
-            subject.Tell(new CheckBalance());
-            ExpectMsg<BalanceStatus>(msg =>
+            subject.Tell(new AccountActor.CheckBalance());
+            ExpectMsg<AccountActor.BalanceStatus>(msg =>
             {
                 decimal expected = balance + deposit - withdraw;
                 Assert.Equal(expected, msg.Balance);
@@ -96,11 +95,11 @@ namespace MoneyTransactionsTests.Actors
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
 
             decimal amount = 50m;
-            subject.Tell(new Withdraw(amount));
-            ExpectMsg<WithdrawFailed>();
+            subject.Tell(new AccountActor.Withdraw(amount));
+            ExpectMsg<AccountActor.WithdrawFailed>();
 
-            subject.Tell(new CheckBalance());
-            ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance, msg.Balance));
+            subject.Tell(new AccountActor.CheckBalance());
+            ExpectMsg<AccountActor.BalanceStatus>(msg => Assert.Equal(balance, msg.Balance));
         }
     }
 }

@@ -1,11 +1,36 @@
 ﻿using Akka.Actor;
-using MoneyTransactions.Actors.Messages;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MoneyTransactions.Actors
 {
+    #region Messages
+
+    public class TransferConfirmed
+    {
+    }
+
+    public class TransferMoney
+    {
+        public TransferMoney(decimal amount, IActorRef source, IActorRef destination)
+        {
+            Amount = amount;
+            Destination = destination;
+            Source = source;
+        }
+
+        public decimal Amount { get; }
+        public IActorRef Destination { get; }
+        public IActorRef Source { get; }
+    }
+
+    public class TransferFailed
+    {
+    }
+
+    #endregion
+
     public class TransferActor : ReceiveActor
     {
         private IActorRef _sender;
@@ -24,23 +49,23 @@ namespace MoneyTransactions.Actors
                 _transferMoney = msg;
 
                 Become(ExecutingTransfer);
-                msg.Source.Tell(new Withdraw(msg.Amount));
+                msg.Source.Tell(new AccountActor.Withdraw(msg.Amount));
             });
         }
 
         private void ExecutingTransfer()
         {
-            Receive<WithdrawCompleted>(msg =>
+            Receive<AccountActor.WithdrawCompleted>(msg =>
             {
-                _transferMoney.Destination.Tell(new Deposit(_transferMoney.Amount));
+                _transferMoney.Destination.Tell(new AccountActor.Deposit(_transferMoney.Amount));
             });
 
-            Receive<WithdrawFailed>(msg =>
+            Receive<AccountActor.WithdrawFailed>(msg =>
             {
                 _sender.Tell(new TransferFailed());
             });
 
-            Receive<DepositConfirmed>(msg =>
+            Receive<AccountActor.DepositConfirmed>(msg =>
             {
                 _sender.Tell(new TransferConfirmed());
                 Become(Ready);
