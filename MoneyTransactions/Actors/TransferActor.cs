@@ -30,19 +30,19 @@ namespace MoneyTransactions.Actors
 
         private void ExecutingTransfer()
         {
-            Receive<WithdrawResult>(msg => msg.Result == Result.Success, msg =>
+            Receive<WithdrawCompleted>(msg =>
             {
                 _transferMoney.Destination.Tell(new Deposit(_transferMoney.Amount));
             });
 
-            Receive<WithdrawResult>(msg =>
+            Receive<WithdrawFailed>(msg =>
             {
-                _sender.Tell(new TransferResult(Result.Error));
+                _sender.Tell(new TransferFailed());
             });
 
-            Receive<DepositResult>(msg =>
+            Receive<DepositConfirmed>(msg =>
             {
-                _sender.Tell(new TransferResult(Result.Success));
+                _sender.Tell(new TransferConfirmed());
                 Become(Ready);
             });
         }

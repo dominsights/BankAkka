@@ -20,13 +20,20 @@ namespace MoneyTransactions.Actors
             Receive<Deposit>(msg =>
             {
                 Account.Deposit(msg.Amount);
-                Sender.Tell(new DepositResult(Result.Success));
+                Sender.Tell(new DepositConfirmed());
             });
 
             Receive<Withdraw>(msg =>
             {
-                var result = Account.Withdraw(msg.Amount);
-                Sender.Tell(new WithdrawResult(result));
+                try
+                {
+                    Account.Withdraw(msg.Amount);
+                    Sender.Tell(new WithdrawCompleted());
+                }
+                catch
+                {
+                    Sender.Tell(new WithdrawFailed());
+                }
             });
         }
 

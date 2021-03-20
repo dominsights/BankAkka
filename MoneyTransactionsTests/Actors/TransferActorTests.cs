@@ -32,7 +32,7 @@ namespace MoneyTransactionsTests.Actors
             var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
             subject.Tell(new TransferMoney(amountToTransfer, sourceAccountActor, destinationActor));
 
-            ExpectMsg<TransferResult>(msg => Assert.True(msg.Result == Result.Success));
+            ExpectMsg<TransferConfirmed>();
 
             sourceAccountActor.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance - amountToTransfer, msg.Balance));
@@ -62,7 +62,7 @@ namespace MoneyTransactionsTests.Actors
             var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
             subject.Tell(new TransferMoney(amountToTransfer, sourceAccountActor, destinationActor));
 
-            ExpectMsg<TransferResult>(msg => Assert.True(msg.Result == Result.Error));
+            ExpectMsg<TransferFailed>();
 
             sourceAccountActor.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance, msg.Balance));

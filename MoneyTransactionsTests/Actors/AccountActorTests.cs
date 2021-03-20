@@ -25,7 +25,7 @@ namespace MoneyTransactionsTests.Actors
             
             decimal amount = 50m;
             subject.Tell(new Deposit(amount));
-            ExpectMsg<DepositResult>(msg => Assert.Equal(Result.Success, msg.Result));
+            ExpectMsg<DepositConfirmed>();
             
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance + amount, msg.Balance ));
@@ -44,7 +44,7 @@ namespace MoneyTransactionsTests.Actors
 
             decimal amount = 50m;
             subject.Tell(new Withdraw(amount));
-            ExpectMsg<WithdrawResult>(msg => Assert.True(msg.Result == Result.Success));
+            ExpectMsg<WithdrawCompleted>();
 
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance - amount, msg.Balance));
@@ -63,7 +63,7 @@ namespace MoneyTransactionsTests.Actors
 
             decimal withdraw = 50m;
             subject.Tell(new Withdraw(withdraw));
-            ExpectMsg<WithdrawResult>(msg => Assert.True(msg.Result == Result.Success));
+            ExpectMsg<WithdrawCompleted>();
 
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg =>
@@ -74,7 +74,7 @@ namespace MoneyTransactionsTests.Actors
 
             decimal deposit = 50m;
             subject.Tell(new Deposit(deposit));
-            ExpectMsg<DepositResult>(msg => Assert.Equal(Result.Success, msg.Result));
+            ExpectMsg<DepositConfirmed>();
 
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg =>
@@ -97,7 +97,7 @@ namespace MoneyTransactionsTests.Actors
 
             decimal amount = 50m;
             subject.Tell(new Withdraw(amount));
-            ExpectMsg<WithdrawResult>(msg => Assert.True(msg.Result == Result.Error));
+            ExpectMsg<WithdrawFailed>();
 
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance, msg.Balance));

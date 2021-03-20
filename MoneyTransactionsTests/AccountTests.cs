@@ -47,7 +47,7 @@ namespace MoneyTransactionsTests
             var account = new Account(accountId, balance, user);
 
             decimal amount = 50m;
-            Assert.Equal(Result.Error, account.Withdraw(amount));
+            Assert.Throws<InvalidOperationException>(() => account.Withdraw(amount));
             Assert.Equal(balance, account.Balance);
         }
 
