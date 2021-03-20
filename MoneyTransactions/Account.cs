@@ -15,14 +15,15 @@ namespace MoneyTransactions
 
         public decimal Balance { get; private set; }
 
-        public void Withdraw(decimal amount)
+        public Result Withdraw(decimal amount)
         {
             if(Balance >= amount)
             {
                 Balance -= amount;
+                return Result.Success;
             } else
             {
-                throw new InvalidOperationException("Not enough money to withdraw.");
+                return Result.Error;
             }
         }
 

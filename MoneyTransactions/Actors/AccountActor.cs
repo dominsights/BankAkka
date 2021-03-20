@@ -25,8 +25,8 @@ namespace MoneyTransactions.Actors
 
             Receive<Withdraw>(msg =>
             {
-                Account.Withdraw(msg.Amount);
-                Sender.Tell(new WithdrawResult(Result.Success));
+                var result = Account.Withdraw(msg.Amount);
+                Sender.Tell(new WithdrawResult(result));
             });
         }
 
