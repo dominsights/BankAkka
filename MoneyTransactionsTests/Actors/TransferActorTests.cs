@@ -37,7 +37,6 @@ namespace MoneyTransactionsTests.Actors
             sourceAccountActor.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance - amountToTransfer, msg.Balance));
 
-
             destinationActor.Tell(new CheckBalance());
             var currentBalance = ExpectMsg<BalanceStatus>();
             Assert.Equal(balance + amountToTransfer, currentBalance.Balance);
