@@ -7,13 +7,15 @@ namespace MoneyTransactions.Actors.Messages
 {
     public class TransferMoney
     {
-        public TransferMoney(decimal amount, IActorRef destinationActor)
+        public TransferMoney(decimal amount, IActorRef source, IActorRef destination)
         {
             Amount = amount;
-            DestinationActor = destinationActor;
+            Destination = destination;
+            Source = source;
         }
 
         public decimal Amount { get; }
-        public IActorRef DestinationActor { get; }
+        public IActorRef Destination { get; }
+        public IActorRef Source { get; }
     }
 }

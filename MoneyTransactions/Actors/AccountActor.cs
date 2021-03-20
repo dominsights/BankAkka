@@ -6,49 +6,12 @@ using System.Text;
 
 namespace MoneyTransactions.Actors
 {
-    public class AccountActor : ReceiveActor, IWithUnboundedStash
+    public class AccountActor : ReceiveActor
     {
-        private IActorRef _sender;
-
         public AccountActor(Account account)
         {
             Account = account;
 
-            Become(Ready);
-        }
-
-        private void Ready()
-        {
-            Receive<TransferMoney>(msg =>
-            {
-                Account.Withdraw(msg.Amount);
-                msg.DestinationActor.Tell(new Deposit(msg.Amount, Account.Id, Account.Client.FullName));
-                _sender = Sender;
-                Become(WaitingForConfirmation);
-            });
-
-            ReceiveCommonMessages();
-        }
-
-        private void WaitingForConfirmation()
-        {
-            ReceiveCommonMessages();
-
-            Receive<TransferMoney>(msg =>
-            {
-                Stash.Stash();
-            });
-
-            Receive<DepositConfirmed>(msg =>
-            {
-                _sender.Tell(new TransferSucceeded(Account.Balance));
-                Become(Ready);
-                Stash.UnstashAll();
-            });
-        }
-
-        private void ReceiveCommonMessages()
-        {
             Receive<CheckBalance>(msg =>
             {
                 Sender.Tell(new BalanceStatus(Account.Balance));
@@ -57,11 +20,16 @@ namespace MoneyTransactions.Actors
             Receive<Deposit>(msg =>
             {
                 Account.Deposit(msg.Amount);
-                Sender.Tell(new DepositConfirmed());
+                Sender.Tell(new DepositResult(Result.Success));
+            });
+
+            Receive<Withdraw>(msg =>
+            {
+                Account.Withdraw(msg.Amount);
+                Sender.Tell(new WithdrawResult(Result.Success));
             });
         }
 
         public Account Account { get; }
-        public IStash Stash { get; set; }
     }
 }

@@ -4,13 +4,13 @@ using System.Text;
 
 namespace MoneyTransactions.Actors.Messages
 {
-    public class Deposit
+    public class TransferResult
     {
-        public Deposit(decimal amount)
+        public TransferResult(Result result)
         {
-            Amount = amount;
+            Result = result;
         }
 
-        public decimal Amount { get; }
+        public Result Result { get; }
     }
 }

@@ -13,30 +13,6 @@ namespace MoneyTransactionsTests.Actors
     public class AccountActorTests : TestKit
     {
         [Fact]
-        public void Should_transfer_correct_amount_when_balance_is_enough()
-        {
-            var accountId = Guid.NewGuid();
-            var clientId = Guid.NewGuid();
-            decimal balance = 100m;
-            var client = new Client(clientId, "Jonh", "Doe");
-            var account = new Account(accountId, balance, client);
-
-            var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
-
-            decimal amountToTransfer = 50m;
-            var destinationAccount = new Account(Guid.NewGuid(), balance, new Client(Guid.NewGuid(), "Jane", "Doe"));
-            var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
-            subject.Tell(new TransferMoney(amountToTransfer, destinationActor));
-
-            var transferSucceeded = ExpectMsg<TransferSucceeded>();
-            Assert.Equal(balance - amountToTransfer, transferSucceeded.NewBalance);
-
-            destinationActor.Tell(new CheckBalance());
-            var currentBalance = ExpectMsg<BalanceStatus>();
-            Assert.Equal(balance + amountToTransfer, currentBalance.Balance);
-        }
-
-        [Fact]
         public void Deposit_should_succeed_when_requested_with_correct_values()
         {
             var accountId = Guid.NewGuid();
@@ -48,15 +24,15 @@ namespace MoneyTransactionsTests.Actors
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
             
             decimal amount = 50m;
-            subject.Tell(new Deposit(amount, Guid.NewGuid(), "Jane Doe"));
-            ExpectMsg<DepositConfirmed>();
+            subject.Tell(new Deposit(amount));
+            ExpectMsg<DepositResult>(msg => Assert.Equal(Result.Success, msg.Result));
             
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance + amount, msg.Balance ));
         }
 
         [Fact]
-        public void Should_accept_new_transfer_while_processing_others()
+        public void Withdraw_should_succeed_when_requested_with_correct_values()
         {
             var accountId = Guid.NewGuid();
             var clientId = Guid.NewGuid();
@@ -66,18 +42,46 @@ namespace MoneyTransactionsTests.Actors
 
             var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
 
-            decimal amountToTransfer = 50m;
-            var destinationAccount = new Account(Guid.NewGuid(), balance, new Client(Guid.NewGuid(), "Jane", "Doe"));
-            var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
-            subject.Tell(new TransferMoney(amountToTransfer, destinationActor));
-            subject.Tell(new TransferMoney(amountToTransfer, destinationActor));
+            decimal amount = 50m;
+            subject.Tell(new Withdraw(amount));
+            ExpectMsg<WithdrawResult>(msg => Assert.True(msg.Result == Result.Success));
 
-            ExpectMsg<TransferSucceeded>(msg => Assert.Equal(balance - amountToTransfer, msg.NewBalance));
-            ExpectMsg<TransferSucceeded>(msg => Assert.Equal(balance - amountToTransfer - amountToTransfer, msg.NewBalance));
+            subject.Tell(new CheckBalance());
+            ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance - amount, msg.Balance));
+        }
 
-            destinationActor.Tell(new CheckBalance());
-            var currentBalance = ExpectMsg<BalanceStatus>();
-            Assert.Equal(balance + amountToTransfer + amountToTransfer, currentBalance.Balance);
+        [Fact]
+        public void Withdraw_followed_by_deposit_should_work()
+        {
+            var accountId = Guid.NewGuid();
+            var clientId = Guid.NewGuid();
+            decimal balance = 100m;
+            var client = new Client(clientId, "Jonh", "Doe");
+            var account = new Account(accountId, balance, client);
+
+            var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
+
+            decimal withdraw = 50m;
+            subject.Tell(new Withdraw(withdraw));
+            ExpectMsg<WithdrawResult>(msg => Assert.True(msg.Result == Result.Success));
+
+            subject.Tell(new CheckBalance());
+            ExpectMsg<BalanceStatus>(msg =>
+            {
+                decimal expected = balance - withdraw;
+                Assert.Equal(expected, msg.Balance);
+            });
+
+            decimal deposit = 50m;
+            subject.Tell(new Deposit(deposit));
+            ExpectMsg<DepositResult>(msg => Assert.Equal(Result.Success, msg.Result));
+
+            subject.Tell(new CheckBalance());
+            ExpectMsg<BalanceStatus>(msg =>
+            {
+                decimal expected = balance + deposit - withdraw;
+                Assert.Equal(expected, msg.Balance);
+            });
         }
     }
 }
