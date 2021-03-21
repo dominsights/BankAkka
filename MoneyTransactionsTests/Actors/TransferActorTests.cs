@@ -2,6 +2,7 @@
 using Akka.TestKit.Xunit2;
 using MoneyTransactions;
 using MoneyTransactions.Actors;
+using MoneyTransactions.Actors.Messages;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,13 +32,13 @@ namespace MoneyTransactionsTests.Actors
             var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
             subject.Tell(new TransferMoney(amountToTransfer, sourceAccountActor, destinationActor));
 
-            ExpectMsg<TransferConfirmed>();
+            ExpectMsg<TransferResult>(msg => Assert.True(msg.Result == Result.Success));
 
-            sourceAccountActor.Tell(new AccountActor.CheckBalance());
-            ExpectMsg<AccountActor.BalanceStatus>(msg => Assert.Equal(balance - amountToTransfer, msg.Balance));
+            sourceAccountActor.Tell(new CheckBalance());
+            ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance - amountToTransfer, msg.Balance));
 
-            destinationActor.Tell(new AccountActor.CheckBalance());
-            var currentBalance = ExpectMsg<AccountActor.BalanceStatus>();
+            destinationActor.Tell(new CheckBalance());
+            var currentBalance = ExpectMsg<BalanceStatus>();
             Assert.Equal(balance + amountToTransfer, currentBalance.Balance);
         }
 
@@ -61,13 +62,13 @@ namespace MoneyTransactionsTests.Actors
             var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
             subject.Tell(new TransferMoney(amountToTransfer, sourceAccountActor, destinationActor));
 
-            ExpectMsg<TransferFailed>();
+            ExpectMsg<TransferResult>(msg => Assert.True(msg.Result == Result.Error));
 
-            sourceAccountActor.Tell(new AccountActor.CheckBalance());
-            ExpectMsg<AccountActor.BalanceStatus>(msg => Assert.Equal(balance, msg.Balance));
+            sourceAccountActor.Tell(new CheckBalance());
+            ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance, msg.Balance));
 
-            destinationActor.Tell(new AccountActor.CheckBalance());
-            var currentBalance = ExpectMsg<AccountActor.BalanceStatus>();
+            destinationActor.Tell(new CheckBalance());
+            var currentBalance = ExpectMsg<BalanceStatus>();
             Assert.Equal(balance, currentBalance.Balance);
         }
     }
