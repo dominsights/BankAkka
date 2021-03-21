@@ -3,6 +3,7 @@ using Akka.TestKit.Xunit2;
 using MoneyTransactions;
 using MoneyTransactions.Actors;
 using MoneyTransactions.Actors.Messages;
+using MoneyTransactions.Foundation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,7 +33,7 @@ namespace MoneyTransactionsTests.Actors
             var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
             subject.Tell(new TransferMoney(amountToTransfer, sourceAccountActor, destinationActor));
 
-            ExpectMsg<TransferResult>(msg => Assert.True(msg.Result == Result.Success));
+            ExpectMsg((Result<TransferMoney> msg) => Assert.True(msg.Status == MoneyTransactions.Status.Success));
 
             sourceAccountActor.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance - amountToTransfer, msg.Balance));
@@ -62,7 +63,7 @@ namespace MoneyTransactionsTests.Actors
             var destinationActor = Sys.ActorOf(Props.Create(() => new AccountActor(destinationAccount)));
             subject.Tell(new TransferMoney(amountToTransfer, sourceAccountActor, destinationActor));
 
-            ExpectMsg<TransferResult>(msg => Assert.True(msg.Result == Result.Error));
+            ExpectMsg((Result<TransferMoney> msg) => Assert.True(msg.Status == MoneyTransactions.Status.Error));
 
             sourceAccountActor.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance, msg.Balance));

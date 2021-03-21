@@ -3,6 +3,7 @@ using Akka.TestKit.Xunit2;
 using MoneyTransactions;
 using MoneyTransactions.Actors;
 using MoneyTransactions.Actors.Messages;
+using MoneyTransactions.Foundation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,7 +26,7 @@ namespace MoneyTransactionsTests.Actors
             
             decimal amount = 50m;
             subject.Tell(new Deposit(amount));
-            ExpectMsg<DepositResult>(msg => Assert.Equal(Result.Success, msg.Result));
+            ExpectMsg((Result<Deposit> msg) => Assert.Equal(MoneyTransactions.Status.Success, msg.Status));
             
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance + amount, msg.Balance ));
@@ -44,7 +45,7 @@ namespace MoneyTransactionsTests.Actors
 
             decimal amount = 50m;
             subject.Tell(new Withdraw(amount));
-            ExpectMsg<WithdrawResult>(msg => Assert.True(msg.Result == Result.Success));
+            ExpectMsg((Result<Withdraw> msg) => Assert.True(msg.Status == MoneyTransactions.Status.Success));
 
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance - amount, msg.Balance));
@@ -63,7 +64,7 @@ namespace MoneyTransactionsTests.Actors
 
             decimal withdraw = 50m;
             subject.Tell(new Withdraw(withdraw));
-            ExpectMsg<WithdrawResult>(msg => Assert.True(msg.Result == Result.Success));
+            ExpectMsg((Result<Withdraw> msg) => Assert.True(msg.Status == MoneyTransactions.Status.Success));
 
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg =>
@@ -74,7 +75,7 @@ namespace MoneyTransactionsTests.Actors
 
             decimal deposit = 50m;
             subject.Tell(new Deposit(deposit));
-            ExpectMsg<DepositResult>(msg => Assert.Equal(Result.Success, msg.Result));
+            ExpectMsg((Result<Deposit> msg) => Assert.Equal(MoneyTransactions.Status.Success, msg.Status));
 
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg =>
@@ -97,7 +98,7 @@ namespace MoneyTransactionsTests.Actors
 
             decimal amount = 50m;
             subject.Tell(new Withdraw(amount));
-            ExpectMsg<WithdrawResult>(msg => Assert.True(msg.Result == Result.Error));
+            ExpectMsg((Result<Withdraw> msg) => Assert.True(msg.Status == MoneyTransactions.Status.Error));
 
             subject.Tell(new CheckBalance());
             ExpectMsg<BalanceStatus>(msg => Assert.Equal(balance, msg.Balance));

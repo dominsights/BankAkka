@@ -15,15 +15,15 @@ namespace MoneyTransactions
 
         public decimal Balance { get; private set; }
 
-        public Result Withdraw(decimal amount)
+        public Status Withdraw(decimal amount)
         {
             if(Balance >= amount)
             {
                 Balance -= amount;
-                return Result.Success;
+                return Status.Success;
             } else
             {
-                return Result.Error;
+                return Status.Error;
             }
         }
 

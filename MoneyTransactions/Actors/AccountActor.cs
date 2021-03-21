@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using MoneyTransactions.Actors.Messages;
+using MoneyTransactions.Foundation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,13 +21,13 @@ namespace MoneyTransactions.Actors
             Receive<Deposit>(msg =>
             {
                 Account.Deposit(msg.Amount);
-                Sender.Tell(new DepositResult(Result.Success));
+                Sender.Tell(new Result<Deposit>(Status.Success));
             });
 
             Receive<Withdraw>(msg =>
             {
                 var result = Account.Withdraw(msg.Amount);
-                Sender.Tell(new WithdrawResult(result));
+                Sender.Tell(new Result<Withdraw>(result));
             });
         }
 

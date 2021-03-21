@@ -1,6 +1,6 @@
 ﻿namespace MoneyTransactions
 {
-    public enum Result
+    public enum Status
     {
         Success,
         Error
