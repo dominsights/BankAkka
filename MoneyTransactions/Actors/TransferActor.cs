@@ -24,8 +24,10 @@ namespace MoneyTransactions.Actors
                 _sender = Sender;
                 _transferMoney = msg;
 
+                var source = Context.ActorSelection("/user/bank/" + msg.Source.Id);
+
                 Become(ExecutingTransfer);
-                msg.Source.Tell(new Withdraw(msg.Amount));
+                source.Tell(new Withdraw(msg.Amount));
             });
         }
 
@@ -33,7 +35,8 @@ namespace MoneyTransactions.Actors
         {
             Receive<Result<Withdraw>>(msg => msg.Status == Status.Success, msg =>
             {
-                _transferMoney.Destination.Tell(new Deposit(_transferMoney.Amount));
+                var destination = Context.ActorSelection("/user/bank/" + _transferMoney.Destination.Id);
+                destination.Tell(new Deposit(_transferMoney.Amount));
             });
 
             Receive<Result<Withdraw>>(msg =>
