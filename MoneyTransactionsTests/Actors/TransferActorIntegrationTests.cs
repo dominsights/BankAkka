@@ -2,12 +2,12 @@
 using Akka.TestKit.Xunit2;
 using MoneyTransactions;
 using MoneyTransactions.Actors;
-using MoneyTransactions.Actors.Messages;
 using MoneyTransactions.Foundation;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
+using static MoneyTransactions.Actors.BankActor;
+using static MoneyTransactions.Actors.AccountActor;
+using static MoneyTransactions.Actors.TransferActor;
 
 namespace MoneyTransactionsTests.Actors
 {

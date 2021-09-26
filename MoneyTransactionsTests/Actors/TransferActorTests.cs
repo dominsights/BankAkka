@@ -2,7 +2,6 @@
 using Akka.TestKit.Xunit2;
 using MoneyTransactions;
 using MoneyTransactions.Actors;
-using MoneyTransactions.Actors.Messages;
 using MoneyTransactions.Foundation;
 using System;
 using System.Collections.Generic;

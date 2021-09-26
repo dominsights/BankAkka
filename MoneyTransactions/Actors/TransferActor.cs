@@ -1,14 +1,14 @@
 ﻿using Akka.Actor;
-using MoneyTransactions.Actors.Messages;
 using MoneyTransactions.Foundation;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using static MoneyTransactions.Actors.AccountActor;
 
 namespace MoneyTransactions.Actors
 {
     public class TransferActor : ReceiveActor
     {
+
+        public record TransferMoney(decimal Amount, Account Source, Account Destination);
+
         private IActorRef _sender;
         private TransferMoney _transferMoney;
 

@@ -7,6 +7,9 @@ namespace MoneyTransactions.Actors
 {
     public class BankActor : ReceiveActor
     {
+        public record CreateAccount(Client Client);
+        public record CreateAccountResult(Account Account, Status Status);
+
         public BankActor()
         {
             Receive<CreateAccount>(msg =>

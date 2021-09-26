@@ -1,15 +1,18 @@
 ﻿using Akka.Actor;
 using Akka.Persistence;
-using MoneyTransactions.Actors.Messages;
 using MoneyTransactions.Foundation;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MoneyTransactions.Actors
 {
     public class AccountActor : PersistentActor
     {
+        public record CheckBalance();
+        public record Deposit(decimal Amount);
+        public record Withdraw(decimal Amount);
+        public record BalanceStatus(decimal Balance);
+        public record DepositExecuted(decimal Amount);
+        public record WithdrawExecuted(decimal Amount);
+
         public AccountActor(Account account)
         {
             Account = account;
