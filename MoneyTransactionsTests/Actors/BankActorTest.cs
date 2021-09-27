@@ -16,7 +16,7 @@ namespace MoneyTransactionsTests.Actors
         {
             var client = new Client(Guid.NewGuid(), "John", "Doe");
 
-            var subject = Sys.ActorOf(Props.Create(() => new BankActor()), "bank");
+            var subject = Sys.ActorOf(Akka.Actor.Props.Create(() => new BankActor()), "bank");
             subject.Tell(new CreateAccount(client));
 
             var result = ExpectMsg<CreateAccountResult>();

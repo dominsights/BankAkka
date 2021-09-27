@@ -13,7 +13,11 @@ namespace MoneyTransactions.Actors
         public record DepositExecuted(decimal Amount);
         public record WithdrawExecuted(decimal Amount);
 
-        public AccountActor(Account account)
+        public static Props Props(Account account) {
+            return Akka.Actor.Props.Create(() => new AccountActor(account));
+        }
+
+        private AccountActor(Account account)
         {
             Account = account;
         }

@@ -20,7 +20,7 @@ namespace MoneyTransactionsTests.Actors
             var client = new Client(clientId, "Jonh", "Doe");
             var account = new Account(accountId, balance, client);
 
-            var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
+            var subject = Sys.ActorOf(AccountActor.Props(account));
             
             decimal amount = 50m;
             subject.Tell(new Deposit(amount));
@@ -39,7 +39,7 @@ namespace MoneyTransactionsTests.Actors
             var client = new Client(clientId, "Jonh", "Doe");
             var account = new Account(accountId, balance, client);
 
-            var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
+            var subject = Sys.ActorOf(AccountActor.Props(account));
 
             decimal amount = 50m;
             subject.Tell(new Withdraw(amount));
@@ -58,7 +58,7 @@ namespace MoneyTransactionsTests.Actors
             var client = new Client(clientId, "Jonh", "Doe");
             var account = new Account(accountId, balance, client);
 
-            var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
+            var subject = Sys.ActorOf(AccountActor.Props(account));
 
             decimal withdraw = 50m;
             subject.Tell(new Withdraw(withdraw));
@@ -92,7 +92,7 @@ namespace MoneyTransactionsTests.Actors
             var client = new Client(clientId, "Jonh", "Doe");
             var account = new Account(accountId, balance, client);
 
-            var subject = Sys.ActorOf(Props.Create(() => new AccountActor(account)));
+            var subject = Sys.ActorOf(AccountActor.Props(account));
 
             decimal amount = 50m;
             subject.Tell(new Withdraw(amount));

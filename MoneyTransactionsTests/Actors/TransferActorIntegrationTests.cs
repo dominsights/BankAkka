@@ -19,7 +19,7 @@ namespace MoneyTransactionsTests.Actors
             var client1 = new Client(Guid.NewGuid(), "John", "Doe");
             var client2 = new Client(Guid.NewGuid(), "Jane", "Doe");
 
-            var bank = Sys.ActorOf(Props.Create(() => new BankActor()), "bank");
+            var bank = Sys.ActorOf(Akka.Actor.Props.Create(() => new BankActor()), "bank");
             bank.Tell(new CreateAccount(client1));
             var resultClient1 = ExpectMsg<CreateAccountResult>();
             bank.Tell(new CreateAccount(client2));
@@ -34,7 +34,7 @@ namespace MoneyTransactionsTests.Actors
             ExpectMsg<Result<Deposit>>();
             ExpectMsg<Result<Deposit>>();
 
-            var transferActor = Sys.ActorOf(Props.Create(() => new TransferActor()));
+            var transferActor = Sys.ActorOf(Akka.Actor.Props.Create(() => new TransferActor()));
             var transfer = new TransferMoney(60m, resultClient1.Account, resultClient2.Account);
             transferActor.Tell(transfer);
             
@@ -54,7 +54,7 @@ namespace MoneyTransactionsTests.Actors
             var client1 = new Client(Guid.NewGuid(), "John", "Doe");
             var client2 = new Client(Guid.NewGuid(), "Jane", "Doe");
 
-            var bank = Sys.ActorOf(Props.Create(() => new BankActor()), "bank");
+            var bank = Sys.ActorOf(Akka.Actor.Props.Create(() => new BankActor()), "bank");
             bank.Tell(new CreateAccount(client1));
             var resultClient1 = ExpectMsg<CreateAccountResult>();
             bank.Tell(new CreateAccount(client2));
@@ -69,7 +69,7 @@ namespace MoneyTransactionsTests.Actors
             ExpectMsg<Result<Deposit>>();
             ExpectMsg<Result<Deposit>>();
 
-            var transferActor = Sys.ActorOf(Props.Create(() => new TransferActor()));
+            var transferActor = Sys.ActorOf(Akka.Actor.Props.Create(() => new TransferActor()));
             var transfer = new TransferMoney(60m, resultClient1.Account, resultClient2.Account);
             transferActor.Tell(transfer);
 
