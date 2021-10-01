@@ -1,6 +1,7 @@
 using Akka.Actor;
 using System.Collections.Generic;
 using System.Linq;
+using Akka.Event;
 using System;
 
 public class Master : ReceiveActor {
@@ -13,14 +14,15 @@ public class Master : ReceiveActor {
     private int childIndex;
     private int taskId;
     Dictionary<int, IActorRef> requestsMapping;
+    private readonly ILoggingAdapter log = Logging.GetLogger(Context);
 
-    public Master(Func<IActorRefFactory, IActorRef> maker) {
+    public Master() {
         requestsMapping = new Dictionary<int, IActorRef>();
         children = new List<IActorRef>();
         
         Receive<Initialize>(msg => {
             children = Enumerable.Range(1, msg.nChildren)
-                        .Select(_ => maker(Context)).ToList();
+                        .Select(_ => Context.ActorOf(Props.Create(() => new Worker()))).ToList();
             Become(Initialized);
         });
     }
@@ -36,6 +38,7 @@ public class Master : ReceiveActor {
         Receive<WordCountReply>(msg => {
             requestsMapping[msg.id].Tell(msg.count);
             requestsMapping.Remove(msg.id);
+            log.Info($"[Reply received] Word count: {msg.count}");
         });
     }
 }
